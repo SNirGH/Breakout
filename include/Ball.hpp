@@ -1,9 +1,10 @@
 #pragma once
 
+#include <Blocks.hpp>
 #include <Player.hpp>
 
 constexpr float BALL_SIZE = 16.0f;
-constexpr float BALL_SPEED = 100.0f;
+constexpr float BALL_SPEED = 300.0f;
 
 class Ball {
  public:
@@ -18,8 +19,9 @@ class Ball {
   void SetDirection(const sf::Vector2f& dir) {
     velocity = BALL_SPEED * dir;
   }
-  void Update(sf::RenderTarget& window, float deltaTime, Player& player) {
+  void Update(sf::RenderTarget& window, float deltaTime, Player& player, Blocks& blocks) {
     sf::RectangleShape playerRect = player.GetRectangle();
+    std::vector<std::vector<sf::RectangleShape>> blocksVec = blocks.GetBlocks();
 
     if (ball.getPosition().x <= 0 or ball.getPosition().x + BALL_SIZE >= window.getSize().x)
       velocity.x = -velocity.x;
@@ -37,6 +39,14 @@ class Ball {
     if (ball.getGlobalBounds().intersects(playerRect.getGlobalBounds()))
       velocity.y = -velocity.y;
 
+    for (size_t row = 0; row < blocksVec.size(); row++) {
+      for (size_t col = 0; col < blocksVec[row].size(); col++) {
+        if (ball.getGlobalBounds().intersects(blocksVec[row][col].getGlobalBounds())) {
+          blocks.RemoveBlock(row, col);
+          velocity.y = -velocity.y;
+        }
+      }
+    }
     ball.move(velocity * deltaTime);
   }
 

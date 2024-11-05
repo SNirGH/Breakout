@@ -11,7 +11,6 @@ int main() {
   Player player({windowSize.x / 2, windowSize.y - 50.0f});
   Ball ball({300.0f, 300.0f});
   ball.SetDirection({1.0f, 1.0f});
-  blocks.RemoveBlock(1, 1);
 
   sf::Clock clock;
 
@@ -26,7 +25,7 @@ int main() {
 
     player.Controls(deltaTime);
 
-    ball.Update(window, deltaTime, player);
+    ball.Update(window, deltaTime, player, blocks);
     player.Update(window);
 
     window.clear();

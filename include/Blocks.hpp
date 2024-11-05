@@ -31,6 +31,8 @@ class Blocks {
     blocks[row].erase(blocks[row].begin() + col);
   }
 
+  std::vector<std::vector<sf::RectangleShape>>& GetBlocks() { return blocks; }
+
   void GenerateBlocks() {
     sf::Vector2f pos = {BLOCK_POS, BLOCK_POS};
     for (size_t i = 0; i < BLOCK_ROWS; i++) {
