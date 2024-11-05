@@ -12,6 +12,10 @@ constexpr float BLOCK_OFFSET = 30.0f;
 
 class Blocks {
  public:
+  enum class BlockState { Red,
+                          Yellow,
+                          Green,
+                          Max };
   Blocks() {
     blocks.resize(BLOCK_ROWS);
     for (auto& row : blocks)
@@ -28,7 +32,15 @@ class Blocks {
   }
 
   void RemoveBlock(size_t row, size_t col) {
-    blocks[row].erase(blocks[row].begin() + col);
+    const sf::Color& currentColor = blocks[row][col].getFillColor();
+
+    if (currentColor == sf::Color::Red) {
+      blocks[row][col].setFillColor(sf::Color::Yellow);
+    } else if (currentColor == sf::Color::Yellow) {
+      blocks[row][col].setFillColor(sf::Color::Green);
+    } else if (currentColor == sf::Color::Green) {
+      blocks[row].erase(blocks[row].begin() + col);
+    }
   }
 
   std::vector<std::vector<sf::RectangleShape>>& GetBlocks() { return blocks; }
@@ -38,15 +50,43 @@ class Blocks {
     for (size_t i = 0; i < BLOCK_ROWS; i++) {
       for (size_t j = 0; j < BLOCK_COLS; j++) {
         sf::RectangleShape rect({BLOCK_WIDTH, BLOCK_HEIGHT});
+
+        switch (state) {
+          case BlockState::Red:
+            rect.setFillColor(sf::Color::Red);
+            break;
+          case BlockState::Yellow:
+            rect.setFillColor(sf::Color::Yellow);
+            break;
+          case BlockState::Green:
+            rect.setFillColor(sf::Color::Green);
+            break;
+          default:
+            break;
+        }
+
         rect.setPosition(pos);
         blocks[i][j] = rect;
         pos.x += BLOCK_WIDTH + BLOCK_OFFSET;
       }
+
       pos.y += BLOCK_HEIGHT + BLOCK_OFFSET;
       pos.x = BLOCK_POS;
+
+      switch (state) {
+        case BlockState::Red:
+          state = BlockState::Yellow;
+          break;
+        case BlockState::Yellow:
+          state = BlockState::Green;
+          break;
+        default:
+          break;
+      }
     }
   }
 
  private:
   std::vector<std::vector<sf::RectangleShape>> blocks;
+  BlockState state = BlockState::Red;
 };
